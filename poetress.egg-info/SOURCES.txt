@@ -7,4 +7,7 @@ poetress/poetress.py
 poetress.egg-info/PKG-INFO
 poetress.egg-info/SOURCES.txt
 poetress.egg-info/dependency_links.txt
+poetress.egg-info/entry_points.txt
+poetress.egg-info/requires.txt
 poetress.egg-info/top_level.txt
+poetress/data/poetress_config.config

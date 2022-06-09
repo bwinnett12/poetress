@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.3.3'
+VERSION = '0.5.1'
 DESCRIPTION = 'Poetry Storage and Retrieval'
 LONG_DESCRIPTION = 'Retrieves poems from the poetry foundation website'
 
@@ -11,12 +11,18 @@ setup(
     version=VERSION,
     author="Bill Winnett",
     author_email="<bwinnett12@gmail.com>",
+    url="https://github.com/bwinnett12/poetress",
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
+    entry_points={
+        'console_scripts': ['poetress=poetress.poetress:main'],
+    },
     packages=find_packages(),
-    install_requires=[],  # add any additional packages that
-    # needs to be installed along with your package. Eg: 'caer'
-
+    install_requires=['bs4==0.0.1',
+                      # 'beautifulsoup>=4.1.1',
+                      'requests~=2.26.0',
+                      'setuptools~=59.8.0'],
+    include_package_data=True,
     keywords=['python', 'poetess'],
     classifiers=[
         "Development Status :: 3 - Alpha",

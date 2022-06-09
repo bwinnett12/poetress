@@ -1,15 +1,17 @@
 #!/usr/bin/python
+import argparse
+import configparser
+import os
+from datetime import date
+import bs4
+import pkg_resources
+from bs4 import BeautifulSoup
+import requests
+
 __author__ = "Bill Winnett"
 __email__ = "bwinnett12@gmail.com"
 __license__ = "MIT"
 __version = "0.5.0"
-
-import argparse
-import os
-from datetime import date
-import bs4
-from bs4 import BeautifulSoup
-import requests
 
 
 # function to return the closest space that doesn't go over the max line length
@@ -153,13 +155,33 @@ def fetch_daily(folder, max_line_length):
     fetch_poetry(url, folder, max_line_length)
 
 
-def main():
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # Settings that can be changed:
-    poetry_storage = "./poetry_storage/"
-    max_line_length = 120
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def get_config():
+    stream = pkg_resources.resource_filename(__name__, "data/poetress_config.config")
+    config = configparser.ConfigParser()
+    config.read(stream)
+    return config
 
+
+def alter_config():
+    stream = pkg_resources.resource_filename(__name__, "data/poetress_config.config")
+    config = configparser.ConfigParser()
+
+    print("Poetress configuration update. Anything blank will be left the same. Please enter your desired arguments:")
+    new_storage_location = input("Please input your location for storage")
+    new_line_max = input("Please input your max characters per line")
+
+    if new_storage_location:
+        config.set("Options", "storage_location", new_storage_location)
+
+    if new_line_max:
+        config.set("Options", "max_line_length", new_line_max)
+
+    ## TODO FINISH this big
+
+
+
+
+def main():
     parser = argparse.ArgumentParser(description='Retrieve and store poems from Poetry Foundation')
     today = date.today()
 
@@ -176,10 +198,21 @@ def main():
                         help='Retrieves a specific poem from the poetry foundation: \n '
                              'Usage: -f [url of poem]')
 
+    parser.add_argument('-c', '--config',
+                        dest='config',
+                        default=False,
+                        action='store_true',
+                        help="Wizard to reset the configuration for poetry storage")
+
+
     args = parser.parse_args()
     daily = args.daily
     fetch = args.fetch
-    daily = True
+
+    config = get_config()
+    poetry_storage = config['Options']['storage_location']
+    max_line_length = config['Options']['max_line_length']
+
 
     if daily:
         fetch_daily(poetry_storage, max_line_length)
@@ -190,3 +223,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+def sample_inside():
+    print("Hello from sample")
