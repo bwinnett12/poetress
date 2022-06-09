@@ -1,0 +1,10 @@
+LICENSE.md
+MANIFEST.in
+README.md
+setup.py
+poetress/__init__.py
+poetress/poetress.py
+poetress.egg-info/PKG-INFO
+poetress.egg-info/SOURCES.txt
+poetress.egg-info/dependency_links.txt
+poetress.egg-info/top_level.txt
