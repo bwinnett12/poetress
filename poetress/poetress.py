@@ -2,16 +2,42 @@
 import argparse
 import configparser
 import os
+from os.path import abspath
 from datetime import date
 import bs4
-import pkg_resources
 from bs4 import BeautifulSoup
+import pkg_resources
 import requests
 
 __author__ = "Bill Winnett"
 __email__ = "bwinnett12@gmail.com"
 __license__ = "MIT"
 __version = "0.5.0"
+
+def get_config():
+    stream = pkg_resources.resource_filename(__name__, "data/poetress_config.config")
+    config = configparser.ConfigParser()
+    config.read(stream)
+    return config
+
+
+def alter_config():
+    stream = pkg_resources.resource_filename(__name__, "data/poetress_config.config")
+    config = configparser.ConfigParser()
+    config.read(stream)
+
+    print("Poetress configuration update. Anything blank will be left the same. \nPlease enter your desired arguments:")
+    new_storage_location = input("Location for storage:   ")
+    new_line_max = input("Max characters per line:   ")
+
+    if new_storage_location:
+        config.set("Options", "storage_location", new_storage_location)
+
+    if new_line_max:
+        config.set("Options", "max_line_length", new_line_max)
+
+    with open(stream, 'w') as configfile:
+        config.write(configfile)
 
 
 # function to return the closest space that doesn't go over the max line length
@@ -61,7 +87,6 @@ def provide_body(soup, max_line_length):
 
     raw_poem = features[0]
     raw_poem = raw_poem.find("div", class_='o-poem')
-    # print(result.prettify())
 
     for ton in raw_poem.contents:
 
@@ -100,10 +125,9 @@ def provide_body(soup, max_line_length):
 # Writes the poem to a file. Wow remarkable
 def write_poem_to_file(location, poem_text, header):
     filee = open(location, "w")
-
-    title = header[0]
+    title = header[0].replace("/", "|")
     try:
-        author = header[1]
+        author = header[1].replace("/", "|")
     except IndexError:
         author = "misc"
 
@@ -117,12 +141,12 @@ def write_poem_to_file(location, poem_text, header):
 # Finds a local location for the poetry
 def get_file_location(folder, header):
     try:
-        author = "-".join(header[1].split(" ")[::-1])
+        author = "-".join(header[1].split(" ")[::-1]).replace("/", "|")
     except IndexError:
         author = "misc"
         pass
 
-    title = "-".join(header[0].split(" "))
+    title = "-".join(header[0].split(" ")).replace("/", "|")
 
     out_loc_folder = folder + author + "/"
     out_loc = out_loc_folder + author + "_" + title + ".txt"
@@ -155,36 +179,11 @@ def fetch_daily(folder, max_line_length):
     fetch_poetry(url, folder, max_line_length)
 
 
-def get_config():
-    stream = pkg_resources.resource_filename(__name__, "data/poetress_config.config")
-    config = configparser.ConfigParser()
-    config.read(stream)
-    return config
-
-
-def alter_config():
-    stream = pkg_resources.resource_filename(__name__, "data/poetress_config.config")
-    config = configparser.ConfigParser()
-
-    print("Poetress configuration update. Anything blank will be left the same. Please enter your desired arguments:")
-    new_storage_location = input("Please input your location for storage")
-    new_line_max = input("Please input your max characters per line")
-
-    if new_storage_location:
-        config.set("Options", "storage_location", new_storage_location)
-
-    if new_line_max:
-        config.set("Options", "max_line_length", new_line_max)
-
-    ## TODO FINISH this big
-
-
-
-
 def main():
     parser = argparse.ArgumentParser(description='Retrieve and store poems from Poetry Foundation')
     today = date.today()
 
+    # All config paresed items
     parser.add_argument('-d', '--daily',
                         dest='daily',
                         default=False,
@@ -204,15 +203,16 @@ def main():
                         action='store_true',
                         help="Wizard to reset the configuration for poetry storage")
 
-
     args = parser.parse_args()
     daily = args.daily
     fetch = args.fetch
+    config = args.config
 
-    config = get_config()
-    poetry_storage = config['Options']['storage_location']
-    max_line_length = config['Options']['max_line_length']
-
+    # Using configparser
+    configuration = get_config()
+    poetry_storage = configuration['Options']['storage_location']
+    poetry_storage = abspath(os.path.expanduser(poetry_storage))
+    max_line_length = int(configuration['Options']['max_line_length'])
 
     if daily:
         fetch_daily(poetry_storage, max_line_length)
@@ -220,9 +220,9 @@ def main():
     if len(fetch) > 0:
         fetch_poetry(fetch, poetry_storage, max_line_length)
 
+    if config:
+        alter_config()
+
 
 if __name__ == '__main__':
     main()
-
-def sample_inside():
-    print("Hello from sample")

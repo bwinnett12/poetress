@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.5.1'
+VERSION = '1.0.0'
 DESCRIPTION = 'Poetry Storage and Retrieval'
 LONG_DESCRIPTION = 'Retrieves poems from the poetry foundation website'
 
