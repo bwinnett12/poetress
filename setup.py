@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 DESCRIPTION = 'Poetry Storage and Retrieval'
-LONG_DESCRIPTION = 'Retrieves poems from the poetry foundation website'
+with open("README.md", "r") as readme:
+    LONG_DESCRIPTION = readme.read()
 
 # Setting up
 setup(
@@ -14,6 +15,7 @@ setup(
     url="https://github.com/bwinnett12/poetress",
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/markdown',
     entry_points={
         'console_scripts': ['poetress=poetress.poetress:main'],
     },
@@ -22,6 +24,11 @@ setup(
                       # 'beautifulsoup>=4.1.1',
                       'requests~=2.26.0',
                       'setuptools~=59.8.0'],
+    extras_require = {
+      "dev": [
+          "pytest>=3.7"
+      ]
+    },
     include_package_data=True,
     keywords=['python', 'poetess'],
     classifiers=[

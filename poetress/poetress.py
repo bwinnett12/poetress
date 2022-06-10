@@ -26,9 +26,9 @@ def alter_config():
     config = configparser.ConfigParser()
     config.read(stream)
 
-    print("Poetress configuration update. Anything blank will be left the same. \nPlease enter your desired arguments:")
-    new_storage_location = input("Location for storage:   ")
-    new_line_max = input("Max characters per line:   ")
+    print("Poetress configuration update. Anything blank will be left the same. \n")
+    new_storage_location = input("Location for storage (currently{0}):  ".format(config['Options']['storage_location']))
+    new_line_max = input("Max characters per line (currently {0}):  ".format(config['Options']["max_line_length"]))
 
     if new_storage_location:
         config.set("Options", "storage_location", new_storage_location)
