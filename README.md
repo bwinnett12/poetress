@@ -30,6 +30,7 @@ poetess -c
  poetess -d // Fetches the poem of the day
  poetess -f [Specific poem] // Fetches a specific poem
  poetess -c // Config wizard
+ poetress -p // Add onto other options, prints retrieved poem to the terminal
  ```
 
 If you want to reset the storage location or the max amount of characters per line

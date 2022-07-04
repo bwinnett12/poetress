@@ -14,6 +14,7 @@ __email__ = "bwinnett12@gmail.com"
 __license__ = "MIT"
 __version = "0.5.0"
 
+
 def get_config():
     stream = pkg_resources.resource_filename(__name__, "data/poetress_config.config")
     config = configparser.ConfigParser()
@@ -163,8 +164,15 @@ def format_storage_folder(folder):
     return folder.rstrip("/") + "/"
 
 
+# Prints fetched poem
+def print_poem(file_location):
+    filee = open(file_location, "r")
+    for line in filee.readlines():
+        print(line.replace("\n", ""))
+
+
 # retrieves poem desired
-def fetch_poetry(url, folder, max_line_length):
+def fetch_poetry(url, folder, max_line_length, print):
     folder = format_storage_folder(folder)
     poem_soup = get_poem_soup(url)
     poem_text = provide_body(poem_soup, max_line_length)
@@ -172,11 +180,14 @@ def fetch_poetry(url, folder, max_line_length):
     file_location = get_file_location(folder, headr)
     write_poem_to_file(file_location, poem_text, headr)
 
+    if print:
+        print_poem(file_location)
+
 
 # Fetches daily poem. Feeds into @fetch_poetry
-def fetch_daily(folder, max_line_length):
+def fetch_daily(folder, max_line_length, print):
     url = get_potd_link()
-    fetch_poetry(url, folder, max_line_length)
+    fetch_poetry(url, folder, max_line_length, print)
 
 
 def main():
@@ -203,10 +214,18 @@ def main():
                         action='store_true',
                         help="Wizard to reset the configuration for poetry storage")
 
+    # All config paresed items
+    parser.add_argument('-p', '--print',
+                        dest='print',
+                        default=False,
+                        action='store_true',
+                        help="Prints the poem of the day. Add to -d or -f option")
+
     args = parser.parse_args()
     daily = args.daily
     fetch = args.fetch
     config = args.config
+    print = args.print
 
     # Using configparser
     configuration = get_config()
@@ -215,10 +234,10 @@ def main():
     max_line_length = int(configuration['Options']['max_line_length'])
 
     if daily:
-        fetch_daily(poetry_storage, max_line_length)
+        fetch_daily(poetry_storage, max_line_length, print)
 
     if len(fetch) > 0:
-        fetch_poetry(fetch, poetry_storage, max_line_length)
+        fetch_poetry(fetch, poetry_storage, max_line_length, print)
 
     if config:
         alter_config()
